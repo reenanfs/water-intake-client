@@ -1,16 +1,17 @@
 import Icon from 'components/icons/Icon';
 import { darken } from 'polished';
-import { Link, LinkProps } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import styled, { css } from 'styled-components';
 
-interface ISidebarItemProps extends LinkProps {
+interface ISidebarItemProps {
+	href: string;
 	iconName: string;
 	text: string;
 	isSelected: boolean;
 }
 
 interface ISidebarLinkProps {
-	isSelected: boolean;
+	$isSelected: boolean;
 }
 
 const SidebarLink = styled(Link)<ISidebarLinkProps>`
@@ -21,7 +22,7 @@ const SidebarLink = styled(Link)<ISidebarLinkProps>`
 	padding: 10px;
 	font-weight: bold;
 	${props =>
-		props.isSelected &&
+		props.$isSelected &&
 		css`
 			border-right: 6px solid ${props.theme.colors.light};
 		`}
@@ -38,10 +39,10 @@ const SidebarItem = ({
 	iconName,
 	text,
 	isSelected,
-	...rest
+	href,
 }: ISidebarItemProps): JSX.Element => {
 	return (
-		<SidebarLink {...rest} isSelected={isSelected}>
+		<SidebarLink to={href} $isSelected={isSelected}>
 			<Icon name={iconName} />
 			{text}
 		</SidebarLink>

@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 import SidebarItem from './SidebarItem';
-import { sidebarOptions } from 'types/sidebarOptions';
-import { useState } from 'react';
+import { SidebarOptions } from 'types/sidebarOptions';
+import { useLocation } from 'react-router-dom';
 
 const SidebarContainer = styled.div`
 	width: 250px;
@@ -17,25 +17,23 @@ const SidebarTitle = styled.h2`
 `;
 
 const Sidebar = () => {
-	const [option, setOption] = useState<sidebarOptions>(sidebarOptions.HOME);
+	const { pathname } = useLocation();
 
 	return (
 		<SidebarContainer>
 			<SidebarTitle>Navigation</SidebarTitle>
 
 			<SidebarItem
-				to='/'
+				href='/'
 				iconName='home'
 				text='Home'
-				isSelected={option === sidebarOptions.HOME}
-				onClick={() => setOption(sidebarOptions.HOME)}
+				isSelected={pathname === SidebarOptions.HOME}
 			/>
 			<SidebarItem
-				to='/settings'
+				href='/settings'
 				iconName='settings'
 				text='Settings'
-				isSelected={option === sidebarOptions.SETTINGS}
-				onClick={() => setOption(sidebarOptions.SETTINGS)}
+				isSelected={pathname === SidebarOptions.SETTINGS}
 			/>
 		</SidebarContainer>
 	);
