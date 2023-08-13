@@ -4,6 +4,7 @@ import {
 	createContext,
 	Dispatch,
 	SetStateAction,
+	useEffect,
 } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 import { clientRoutePaths } from 'constants/routesConstants';
@@ -89,6 +90,7 @@ export const AuthProvider = ({ children }: IAuthProviderProps): JSX.Element => {
 						user,
 					},
 				} = await apiRoutes.profile();
+
 				setAuth(accessToken, refreshToken, user);
 			}
 			return true;

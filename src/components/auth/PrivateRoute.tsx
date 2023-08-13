@@ -11,6 +11,7 @@ const PrivateRoute = () => {
 
 	useEffect(() => {
 		const checkAuthentication = async () => {
+			console.log('oi');
 			const response = await isAuthenticated();
 			setAuthenticated(response);
 			setLoading(false);

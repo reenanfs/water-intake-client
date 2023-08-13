@@ -23,13 +23,34 @@ interface IAuthResponse {
 	};
 }
 
-export const api = axios.create({
+const api = axios.create({
 	baseURL: 'http://localhost:4000',
 	headers: {
 		'Content-Type': 'application/json',
 	},
 	withCredentials: true,
 });
+
+api.interceptors.response.use(
+	response => response,
+	async error => {
+		const originalRequest = error.config;
+
+		if (error.response.status === 401 && !originalRequest._retry) {
+			originalRequest._retry = true;
+
+			try {
+				await apiRoutes.refresh();
+
+				return api(originalRequest);
+			} catch (refreshError) {
+				return Promise.reject('Failed to refresh token');
+			}
+		}
+
+		return Promise.reject(error);
+	}
+);
 
 export const apiRoutes = {
 	login: async (data: ILoginPayload): Promise<IAuthResponse> => {
@@ -46,6 +67,10 @@ export const apiRoutes = {
 	},
 	logout: async (): Promise<void> => {
 		const response = await api.post(serverRoutePaths.LOGOUT);
+		return response.data;
+	},
+	refresh: async (): Promise<void> => {
+		const response = await api.post(serverRoutePaths.REFRESH);
 		return response.data;
 	},
 };

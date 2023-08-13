@@ -1,4 +1,6 @@
+import Button from 'components/buttons/Button';
 import ThemeToggleButton from 'components/buttons/toggle-buttons/ThemeToggleButton';
+import { useAuth } from 'hooks/useAuth';
 import styled from 'styled-components';
 
 const HeaderContainer = styled.header`
@@ -16,11 +18,25 @@ const HeaderTitle = styled.h1`
 	margin: 0;
 `;
 
+const ButtonsContainer = styled.div`
+	display: flex;
+	align-items: center;
+`;
+
+const SpaceBetweenButtons = styled.div`
+	margin-left: 15px; /* Adjust the margin as needed */
+`;
+
 const Header = () => {
+	const { handleLogout } = useAuth();
 	return (
 		<HeaderContainer>
 			<HeaderTitle>Water Intake App</HeaderTitle>
-			<ThemeToggleButton />
+			<ButtonsContainer>
+				<ThemeToggleButton />
+				<SpaceBetweenButtons />
+				<Button onClick={handleLogout}>Logout</Button>
+			</ButtonsContainer>
 		</HeaderContainer>
 	);
 };
