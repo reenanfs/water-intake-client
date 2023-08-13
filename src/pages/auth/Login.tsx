@@ -6,13 +6,14 @@ import { Link } from 'react-router-dom';
 
 import Button from 'components/buttons/Button';
 import Input from 'components/inputs/FormInput';
-import api from 'api/waterIntakeServer';
+import { apiRoutes } from 'api/axios';
 import FormContainer from './components/FormContainer';
 import FormLabel from './components/FormLabel';
 import Form from './components/form';
 import { useState } from 'react';
 import FormErrorBox from './components/FormErrorBox';
-import { AxiosError } from 'axios';
+import { clientRoutePaths } from 'constants/routesConstants';
+import { useAuth } from 'hooks/useAuth';
 
 const LoginInput = styled(Input)`
 	width: 80%;
@@ -49,12 +50,16 @@ const Login = () => {
 		},
 	});
 
+	const { handleLogin } = useAuth();
+
 	const [serverError, setServerError] = useState('');
 
 	const onFormSubmit: SubmitHandler<LoginFormValues> = async data => {
 		try {
-			const response = await api.post('/auth/login', data);
-			console.log(response);
+			const {
+				data: { access_token, refresh_token, user },
+			} = await apiRoutes.login(data);
+			handleLogin(access_token, refresh_token, user);
 		} catch (err: any) {
 			setServerError(err.response?.data?.msg || 'An unknown error occurred.');
 		}
@@ -74,7 +79,8 @@ const Login = () => {
 
 				<LoginButton type='submit'>Login</LoginButton>
 				<p>
-					Doesn't have an account? <Link to='/register'>Create one now!</Link>
+					Doesn't have an account?{' '}
+					<Link to={clientRoutePaths.REGISTER}>Create one now!</Link>
 				</p>
 				{serverError && <FormErrorBox msg={serverError} />}
 			</Form>

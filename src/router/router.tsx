@@ -6,18 +6,19 @@ import App from 'components/App';
 import Settings from 'pages/Settings';
 import Register from 'pages/auth/Register';
 import PrivateRoute from 'components/auth/PrivateRoute';
+import { clientRoutePaths } from 'constants/routesConstants';
 
 const router = createBrowserRouter([
 	{
-		path: '/',
-		element: <App />,
+		path: clientRoutePaths.HOME,
+		element: <PrivateRoute />,
 		children: [
 			{
-				element: <PrivateRoute />,
+				element: <App />,
 				children: [
 					{ index: true, element: <Home /> },
 					{
-						path: 'settings',
+						path: clientRoutePaths.SETTINGS,
 						element: <Settings />,
 					},
 				],
@@ -25,11 +26,11 @@ const router = createBrowserRouter([
 		],
 	},
 	{
-		path: '/login',
+		path: clientRoutePaths.LOGIN,
 		element: <Login />,
 	},
 	{
-		path: '/register',
+		path: clientRoutePaths.REGISTER,
 		element: <Register />,
 	},
 ]);

@@ -6,10 +6,15 @@ import { Link } from 'react-router-dom';
 
 import Button from 'components/buttons/Button';
 import Input from 'components/inputs/FormInput';
-import api from 'api/waterIntakeServer';
+
 import FormContainer from './components/FormContainer';
 import FormLabel from './components/FormLabel';
 import Form from './components/form';
+import { clientRoutePaths } from 'constants/routesConstants';
+import { apiRoutes } from 'api/axios';
+import { useAuth } from 'hooks/useAuth';
+import { useState } from 'react';
+import FormErrorBox from './components/FormErrorBox';
 
 const StyledInput = styled(Input)`
 	width: 80%;
@@ -32,7 +37,10 @@ const schema = yup.object().shape({
 		.string()
 		.email('Must be a valid email')
 		.required('Email is required'),
-	password: yup.string().required('Password is required'),
+	password: yup
+		.string()
+		.min(6, 'Password must have at least 6 characters')
+		.required('Password is required'),
 });
 
 const Register = () => {
@@ -49,13 +57,18 @@ const Register = () => {
 		},
 	});
 
+	const { handleLogin } = useAuth();
+
+	const [serverError, setServerError] = useState('');
+
 	const onFormSubmit: SubmitHandler<RegisterFormValues> = async data => {
-		console.log(data);
 		try {
-			const response = await api.post('/auth/register', data);
-			console.log(response);
+			const {
+				data: { access_token, refresh_token, user },
+			} = await apiRoutes.register(data);
+			handleLogin(access_token, refresh_token, user);
 		} catch (err: any) {
-			console.log(err.response.data);
+			setServerError(err.response?.data?.msg || 'An unknown error occurred.');
 		}
 	};
 
@@ -75,8 +88,10 @@ const Register = () => {
 				<StyledButton type='submit'>Register</StyledButton>
 
 				<p>
-					Already have an account? <Link to='/login'>Login over here!</Link>
+					Already have an account?{' '}
+					<Link to={clientRoutePaths.LOGIN}>Login over here!</Link>
 				</p>
+				{serverError && <FormErrorBox msg={serverError} />}
 			</Form>
 		</FormContainer>
 	);

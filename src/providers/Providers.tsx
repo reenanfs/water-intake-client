@@ -1,4 +1,5 @@
-import { ThemeProvider } from 'contexts/themeContext';
+import { AuthProvider } from 'contexts/AuthContext';
+import { ThemeProvider } from 'contexts/ThemeContext';
 import { ReactNode } from 'react';
 
 interface ProviderProps {
@@ -6,7 +7,11 @@ interface ProviderProps {
 }
 
 const Providers = ({ children }: ProviderProps): JSX.Element => {
-	return <ThemeProvider>{children}</ThemeProvider>;
+	return (
+		<AuthProvider>
+			<ThemeProvider>{children}</ThemeProvider>
+		</AuthProvider>
+	);
 };
 
 export default Providers;
