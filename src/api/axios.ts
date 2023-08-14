@@ -13,7 +13,7 @@ interface IRegisterPayload {
 	password: string;
 }
 
-interface IAuthResponse {
+export interface IAuthResponse {
 	ok: boolean;
 	msg: string;
 	data: {
@@ -36,15 +36,16 @@ api.interceptors.response.use(
 	async error => {
 		const originalRequest = error.config;
 
-		if (error.response.status === 401 && !originalRequest._retry) {
-			originalRequest._retry = true;
-
+		if (
+			error.response.status === 401 &&
+			originalRequest.url !== serverRoutePaths.REFRESH
+		) {
 			try {
 				await apiRoutes.refresh();
 
 				return api(originalRequest);
 			} catch (refreshError) {
-				return Promise.reject('Failed to refresh token');
+				return Promise.reject(refreshError);
 			}
 		}
 

@@ -11,4 +11,5 @@ export enum serverRoutePaths {
 	LOGOUT = 'auth/logout',
 	REFRESH = 'auth/refresh',
 	PROFILE = '/auth/profile',
+	HOME = 'HOME',
 }

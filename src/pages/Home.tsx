@@ -3,7 +3,6 @@ import { useTheme } from 'hooks/useTheme';
 
 const Home = (): JSX.Element => {
 	const { toggleTheme } = useTheme();
-
 	return (
 		<>
 			<Button onClick={toggleTheme}>Toggle Theme</Button>

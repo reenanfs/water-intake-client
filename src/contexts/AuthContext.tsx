@@ -4,7 +4,6 @@ import {
 	createContext,
 	Dispatch,
 	SetStateAction,
-	useEffect,
 } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 import { clientRoutePaths } from 'constants/routesConstants';
@@ -29,7 +28,7 @@ export interface AuthContextProps {
 		navigate: NavigateFunction
 	) => void;
 	handleLogout: (navigate: NavigateFunction) => void;
-	isAuthenticated: () => Promise<boolean>;
+	isAuthenticated: () => boolean;
 	setAuth: (accessToken: string, refreshToken: string, user: IUser) => void;
 }
 
@@ -40,7 +39,7 @@ export const AuthContext = createContext<AuthContextProps>({
 	refreshToken: null,
 	handleLogin: () => {},
 	handleLogout: () => {},
-	isAuthenticated: async () => false,
+	isAuthenticated: () => false,
 	setAuth: () => {},
 });
 
@@ -80,26 +79,8 @@ export const AuthProvider = ({ children }: IAuthProviderProps): JSX.Element => {
 		navigate(clientRoutePaths.LOGIN);
 	};
 
-	const isAuthenticated = async (): Promise<boolean> => {
-		try {
-			if (!accessToken) {
-				const {
-					data: {
-						access_token: accessToken,
-						refresh_token: refreshToken,
-						user,
-					},
-				} = await apiRoutes.profile();
-
-				setAuth(accessToken, refreshToken, user);
-			}
-			return true;
-		} catch (error: any) {
-			if (error.response && error.response.status === 401) {
-				return false;
-			}
-			throw error;
-		}
+	const isAuthenticated = (): boolean => {
+		return !!accessToken;
 	};
 
 	return (
