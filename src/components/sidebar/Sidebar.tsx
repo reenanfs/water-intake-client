@@ -18,7 +18,7 @@ const SidebarContainer = styled.div<ISidebarContainer>`
 `;
 
 const Separator = styled.hr`
-	margin-top: 0;
+	margin-top: 1;
 `;
 
 const Sidebar = () => {
