@@ -12,6 +12,7 @@ interface InputProps<T extends FieldValues> extends UseControllerProps<T> {
 	type?: string;
 	errors?: FieldErrors<T> | DeepMap<any, FieldErrors<T>> | undefined;
 	className?: string;
+	placeholder?: string;
 }
 
 const InputWrapper = styled.div`
@@ -32,7 +33,7 @@ const ErrorMessage = styled.span`
 `;
 
 const Input = <T extends FieldValues>(props: InputProps<T>) => {
-	const { type, name, errors, className } = props;
+	const { type, name, errors, className, placeholder } = props;
 	const { field } = useController(props);
 
 	return (
@@ -40,7 +41,7 @@ const Input = <T extends FieldValues>(props: InputProps<T>) => {
 			<StyledInput
 				{...field}
 				type={type}
-				placeholder={capitalize(name)}
+				placeholder={placeholder ? placeholder : capitalize(name)}
 				hasError={!!errors[name]}
 				className={className}
 			/>

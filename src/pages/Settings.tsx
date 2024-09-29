@@ -1,7 +1,10 @@
+import { yupResolver } from '@hookform/resolvers/yup';
+import * as yup from 'yup';
 import Button from 'components/buttons/Button';
 import Container from 'components/containers/container/Container';
 import Title from 'components/titles/Title';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useForm } from 'react-hook-form';
 import styled from 'styled-components';
 
 const Input = styled.input`
@@ -11,25 +14,47 @@ const Input = styled.input`
 	font-size: 16px;
 `;
 
-const Settings = (): JSX.Element => {
-	const [dailyTarget, setDailyTarget] = useState<number | string>('');
+interface SettingsFormValues {
+	weight: number;
+	activityLevel: number;
+	targetWaterAmount: number;
+}
 
-	const handleSetTarget = () => {
-		if (dailyTarget) {
-			alert(`Daily target set to ${dailyTarget} ml`);
-		}
-	};
+const schema = yup.object().shape({
+	weight: yup
+		.number()
+		.required('A daily consumption should be set')
+		.moreThan(0, 'Intake must be greater than 0'),
+	activityLevel: yup
+		.number()
+		.required('A daily consumption should be set')
+		.moreThan(0, 'Intake must be greater than 0'),
+	targetWaterAmount: yup
+		.number()
+		.required('A daily consumption should be set')
+		.moreThan(0, 'Intake must be greater than 0'),
+});
+
+const Settings = (): JSX.Element => {
+	const {
+		control,
+		handleSubmit,
+		formState: { errors },
+		reset,
+	} = useForm<SettingsFormValues>({
+		resolver: yupResolver(schema),
+		defaultValues: {
+			weight: 0,
+			activityLevel: 0,
+			targetWaterAmount: 0,
+		},
+	});
 
 	return (
 		<Container>
 			<Title>Set your daily target</Title>
-			<Input
-				type='number'
-				placeholder='Set your daily target (ml)'
-				value={dailyTarget}
-				onChange={e => setDailyTarget(e.target.value)}
-			/>
-			<Button onClick={handleSetTarget}>Set Target</Button>
+			<Input type='number' placeholder='Set your daily target (ml)' />
+			<Button>Set Target</Button>
 		</Container>
 	);
 };

@@ -7,14 +7,14 @@ import { Link } from 'react-router-dom';
 import Button from 'components/buttons/Button';
 import Input from 'components/inputs/FormInput';
 
-import FormContainer from './components/FormContainer';
-import FormLabel from './components/FormLabel';
-import Form from './components/form';
+import FormContainer from '../../components/forms/FormContainer';
+import FormLabel from '../../components/forms/FormLabel';
+import Form from '../../components/forms/form';
 import { clientRoutePaths } from 'constants/routesConstants';
 import { apiRoutes } from 'api/axios';
 import { useAuth } from 'hooks/useAuth';
 import { useState } from 'react';
-import FormErrorBox from './components/FormErrorBox';
+import FormErrorBox from '../../components/forms/FormErrorBox';
 
 const StyledInput = styled(Input)`
 	width: 80%;

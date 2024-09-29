@@ -10,6 +10,8 @@ const MainContainer = styled.div`
 	flex-direction: column;
 	align-items: center;
 	padding: 20px;
+	overflow-x: hidden;
+	overflow-y: hidden;
 `;
 
 const Container = ({ children }: IContentProps) => (

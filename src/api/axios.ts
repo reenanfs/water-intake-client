@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { serverRoutePaths } from 'constants/routesConstants';
 import { IUser } from 'types/authTypes';
+import { IWaterIntake } from 'types/waterIntakeTypes';
 
 interface ILoginPayload {
 	email: string;
@@ -21,6 +22,23 @@ export interface IAuthResponse {
 		refresh_token: string;
 		user: IUser;
 	};
+}
+
+interface IAddWaterIntakeResponse {
+	ok: boolean;
+	msg: string;
+	data: IWaterIntake;
+}
+
+interface IGetWaterIntakePayload {
+	startDate?: string;
+	endDate?: string;
+}
+
+interface IGetWaterIntakeResponse {
+	ok: boolean;
+	msg: string;
+	data: IWaterIntake[];
 }
 
 const api = axios.create({
@@ -71,6 +89,25 @@ export const apiRoutes = {
 	},
 	refresh: async (): Promise<void> => {
 		const response = await api.post(serverRoutePaths.REFRESH);
+		return response.data;
+	},
+	addWaterIntake: async (
+		waterIntake: number
+	): Promise<IAddWaterIntakeResponse> => {
+		const response = await api.post(serverRoutePaths.WATER_INTAKE, {
+			amount: waterIntake,
+		});
+		return response.data;
+	},
+	getWaterIntakes: async (
+		data?: IGetWaterIntakePayload
+	): Promise<IGetWaterIntakeResponse> => {
+		const response = await api.get(serverRoutePaths.WATER_INTAKE, {
+			params: {
+				start_date: data && data.startDate,
+				end_date: data && data.endDate,
+			},
+		});
 		return response.data;
 	},
 };
