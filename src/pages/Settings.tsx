@@ -6,13 +6,12 @@ import Title from 'components/titles/Title';
 import { useEffect, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
 import styled from 'styled-components';
-import FormLabel from 'components/forms/FormLabel';
-import FormInput from 'components/inputs/FormInput';
 import FormErrorBox from 'components/forms/FormErrorBox';
 import Form from 'components/forms/form';
 import { apiRoutes } from 'api/axios';
 import { ActivityLevel } from 'types/waterIntakeTypes';
 import { useAuth } from 'hooks/useAuth';
+import FormInput from 'components/inputs/FormInput';
 
 const Input = styled.input`
 	padding: 10px;
@@ -46,7 +45,6 @@ const Settings = (): JSX.Element => {
 		control,
 		handleSubmit,
 		formState: { errors },
-		reset,
 	} = useForm<SettingsFormValues>({
 		resolver: yupResolver(schema),
 	});
@@ -116,7 +114,13 @@ const Settings = (): JSX.Element => {
 		<Container>
 			<Form onSubmit={handleSubmit(onFormSubmit)}>
 				<Title>Set your daily target</Title>
-				<Input type='number' placeholder='Set your daily target (ml)' />
+				<FormInput
+					name='targetWaterAmount'
+					type='number'
+					placeholder='Set your daily target (ml)'
+					errors={errors}
+					control={control}
+				/>
 				<Button>Set Target</Button>
 				{serverError && <FormErrorBox msg={serverError} />}
 			</Form>
