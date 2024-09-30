@@ -79,8 +79,8 @@ interface HomeFormValues {
 const schema = yup.object().shape({
 	waterIntake: yup
 		.number()
-		.required('A daily consumption should be set')
-		.moreThan(0, 'Intake must be greater than 0'),
+		.moreThan(0, 'Intake must be greater than 0')
+		.required('A daily consumption should be set'),
 });
 
 const Home: React.FC = () => {
@@ -91,9 +91,6 @@ const Home: React.FC = () => {
 		reset,
 	} = useForm<HomeFormValues>({
 		resolver: yupResolver(schema),
-		defaultValues: {
-			waterIntake: 0,
-		},
 	});
 
 	const [activeTab, setActiveTab] = useState<number>(0);
@@ -114,8 +111,8 @@ const Home: React.FC = () => {
 	const onFormSubmit: SubmitHandler<HomeFormValues> = async (data, e) => {
 		try {
 			await apiRoutes.addWaterIntake(data.waterIntake);
+			reset();
 			await fetchData();
-			reset({ waterIntake: 0 });
 		} catch (err: any) {
 			setServerError(err.response?.data?.msg || 'An unknown error occurred.');
 		}
@@ -140,8 +137,9 @@ const Home: React.FC = () => {
 				<Form onSubmit={handleSubmit(onFormSubmit)}>
 					<FormLabel>Intake</FormLabel>
 					<FormInput
+						type='number'
 						name='waterIntake'
-						placeholder='Water intake in ml'
+						placeholder='Water intake (ml)'
 						errors={errors}
 						control={control}
 					/>

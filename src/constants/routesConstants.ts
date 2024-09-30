@@ -12,4 +12,6 @@ export enum serverRoutePaths {
 	REFRESH = 'auth/refresh',
 	PROFILE = '/auth/profile',
 	WATER_INTAKE = '/water-intakes/',
+	CALCULATE_WATER_INTAKE = '/water-intakes/calculate-target',
+	USER = '/users/',
 }

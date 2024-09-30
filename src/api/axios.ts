@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { serverRoutePaths } from 'constants/routesConstants';
 import { IUser } from 'types/authTypes';
-import { IWaterIntake } from 'types/waterIntakeTypes';
+import { ActivityLevel, IWaterIntake } from 'types/waterIntakeTypes';
 
 interface ILoginPayload {
 	email: string;
@@ -39,6 +39,31 @@ interface IGetWaterIntakeResponse {
 	ok: boolean;
 	msg: string;
 	data: IWaterIntake[];
+}
+
+interface ICalculateTargetWaterIntakePayload {
+	weight: number;
+	activityLevel: ActivityLevel;
+}
+
+interface ICalculateTargetWaterIntakeResponse {
+	ok: boolean;
+	msg: string;
+	data: {
+		target_intake_amount: number;
+	};
+}
+
+interface IUpdateUserPayload {
+	weight?: number;
+	activityLevel?: ActivityLevel;
+	targetWaterAmount?: number;
+}
+
+interface IUpdateUserSettingsResponse {
+	ok: boolean;
+	msg: string;
+	data: IUser;
 }
 
 const api = axios.create({
@@ -104,9 +129,28 @@ export const apiRoutes = {
 	): Promise<IGetWaterIntakeResponse> => {
 		const response = await api.get(serverRoutePaths.WATER_INTAKE, {
 			params: {
-				start_date: data && data.startDate,
-				end_date: data && data.endDate,
+				start_date: data?.startDate,
+				end_date: data?.endDate,
 			},
+		});
+		return response.data;
+	},
+	calculateTargetWaterIntake: async (
+		data: ICalculateTargetWaterIntakePayload
+	): Promise<ICalculateTargetWaterIntakeResponse> => {
+		const response = await api.post(serverRoutePaths.CALCULATE_WATER_INTAKE, {
+			weight: data.weight,
+			activity_level: data.activityLevel,
+		});
+		return response.data;
+	},
+	updateUserSettings: async (
+		data?: IUpdateUserPayload
+	): Promise<IUpdateUserSettingsResponse> => {
+		const response = await api.put(serverRoutePaths.USER, {
+			activity_level: data?.activityLevel,
+			target_water_amount: data?.targetWaterAmount,
+			weight: data?.weight,
 		});
 		return response.data;
 	},
