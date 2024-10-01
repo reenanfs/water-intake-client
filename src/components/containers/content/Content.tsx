@@ -8,6 +8,7 @@ const OuterContainer = styled.div`
 	width: 100%;
 	max-width: 80vw;
 	margin: auto;
+	overflow-y: auto;
 `;
 
 const InnerContainer = styled.div`
@@ -17,6 +18,7 @@ const InnerContainer = styled.div`
 	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	height: 80vh;
 	margin-top: 40px;
+	overflow: auto;
 `;
 
 const Content = ({ children }: IContentProps) => (
