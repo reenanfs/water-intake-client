@@ -4,6 +4,7 @@ import {
 	createContext,
 	Dispatch,
 	SetStateAction,
+	useCallback,
 } from 'react';
 import { NavigateFunction } from 'react-router-dom';
 import { clientRoutePaths } from 'constants/routesConstants';
@@ -48,16 +49,14 @@ export const AuthProvider = ({ children }: IAuthProviderProps): JSX.Element => {
 	const [accessToken, setAccessToken] = useState<string | null>(null);
 	const [refreshToken, setRefreshToken] = useState<string | null>(null);
 
-	const setAuth = (
-		accessToken: string,
-		refreshToken: string,
-		user: IUser
-	): void => {
-		setAccessToken(accessToken);
-		setRefreshToken(refreshToken);
-
-		setCurrentUser(user);
-	};
+	const setAuth = useCallback(
+		(accessToken: string, refreshToken: string, user: IUser): void => {
+			setAccessToken(accessToken);
+			setRefreshToken(refreshToken);
+			setCurrentUser(user);
+		},
+		[]
+	);
 
 	const handleLogin = (
 		newAccessToken: string,

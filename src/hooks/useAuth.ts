@@ -11,7 +11,7 @@ export const useAuth = () => {
 		newAccessToken: string,
 		newRefreshToken: string,
 		user: IUser
-	) => {
+	): void => {
 		authStore.handleLogin(newAccessToken, newRefreshToken, user, navigate);
 	};
 

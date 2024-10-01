@@ -13,6 +13,7 @@ interface InputProps<T extends FieldValues> extends UseControllerProps<T> {
 	errors?: FieldErrors<T> | DeepMap<any, FieldErrors<T>> | undefined;
 	className?: string;
 	placeholder?: string;
+	onValueChange?: (value: string) => void;
 }
 
 const InputWrapper = styled.div`
@@ -25,6 +26,9 @@ const StyledInput = styled.input<{ hasError: boolean }>`
 	padding: 10px;
 	border: 1px solid ${props => (props.hasError ? 'red' : '#ccc')};
 	border-radius: 5px;
+	margin: 10px 0;
+	width: 200px;
+	font-size: 16px;
 `;
 
 const ErrorMessage = styled.span`
@@ -33,8 +37,17 @@ const ErrorMessage = styled.span`
 `;
 
 const Input = <T extends FieldValues>(props: InputProps<T>) => {
-	const { type, name, errors, className, placeholder } = props;
+	const { type, name, errors, className, placeholder, onValueChange } = props;
 	const { field } = useController(props);
+
+	const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+		field.onChange(e);
+		const newValue = e.target.value;
+
+		if (onValueChange) {
+			onValueChange(newValue);
+		}
+	};
 
 	return (
 		<>
@@ -44,6 +57,7 @@ const Input = <T extends FieldValues>(props: InputProps<T>) => {
 				placeholder={placeholder ? placeholder : capitalize(name)}
 				hasError={!!errors[name]}
 				className={className}
+				onChange={handleChange}
 			/>
 			<InputWrapper>
 				{errors[name] && <ErrorMessage>{errors[name].message}</ErrorMessage>}

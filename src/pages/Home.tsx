@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import styled from 'styled-components';
 import * as yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
@@ -8,43 +8,20 @@ import Container from 'components/containers/container/Container';
 import Button from 'components/buttons/Button';
 import { SubmitHandler, useForm } from 'react-hook-form';
 
-import FormInput from 'components/inputs/FormInput';
+import FormInput from 'components/forms/FormInput';
 import FormErrorBox from '../components/forms/FormErrorBox';
 import Form from '../components/forms/form';
 import Label from '../components/forms/FormLabel';
 import { apiRoutes } from 'api/axios';
 import { IWaterIntake } from 'types/waterIntakeTypes';
+import { TabContainer } from 'components/tabs/TabContainer';
+import { Tab } from 'components/tabs/Tab';
+import { useAuth } from 'hooks/useAuth';
+import Title from 'components/titles/Title';
 
 const FormLabel = styled(Label)`
 	font-size: 2rem;
 ` as typeof Label;
-
-const TabContainer = styled.div`
-	display: flex;
-	justify-content: space-around;
-	width: 100%;
-	margin-top: 20px;
-	border-bottom: 1px solid ${props => props.theme.colors.secondary};
-	padding-bottom: 10px;
-	margin-bottom: 50px;
-`;
-
-const Tab = styled.div<{ active: boolean }>`
-	font-size: 1.6rem;
-	font-weight: ${props => (props.active ? 'bold' : 'normal')};
-	padding: 10px 20px;
-	cursor: pointer;
-	color: ${props =>
-		props.active ? props.theme.colors.secondary : props.theme.colors.secondary};
-	border-bottom: ${props =>
-		props.active ? `3px solid ${props.theme.colors.secondary}` : 'none'};
-	transition: all 0.3s ease;
-
-	&:hover {
-		color: ${props => props.theme.colors.primary};
-		border-bottom: 3px solid ${props => props.theme.colors.primary};
-	}
-`;
 
 const ConsumptionList = styled.ul`
 	list-style-type: none;
@@ -84,6 +61,8 @@ const schema = yup.object().shape({
 });
 
 const Home: React.FC = () => {
+	const { currentUser } = useAuth();
+
 	const {
 		control,
 		handleSubmit,
@@ -95,10 +74,13 @@ const Home: React.FC = () => {
 
 	const [activeTab, setActiveTab] = useState<number>(0);
 	const [todayIntakes, setTodayIntakes] = useState<IWaterIntake[]>();
+	const [todayTotalIntake, setTodayTotalIntake] = useState<number>(0);
+	const [targetWaterIntake, setTargetWaterIntake] = useState<number>(0);
+	const [dailyIntakeReached, setDailyIntakeReached] = useState<boolean>(false);
 
 	const [serverError, setServerError] = useState('');
 
-	const fetchData = async () => {
+	const fetchData = useCallback(async () => {
 		const today = moment().format('YYYY-MM-DD');
 		const { data: intakes } = await apiRoutes.getWaterIntakes({
 			startDate: today,
@@ -106,12 +88,21 @@ const Home: React.FC = () => {
 		});
 
 		setTodayIntakes(intakes);
-	};
+
+		const todayTotalIntake = intakes.reduce(
+			(dayIntake, currentIntake) => dayIntake + currentIntake.amount,
+			0
+		);
+
+		setTodayTotalIntake(todayTotalIntake);
+		setTargetWaterIntake(currentUser!.target_water_amount);
+		setDailyIntakeReached(todayTotalIntake >= currentUser!.target_water_amount);
+	}, [currentUser]);
 
 	const onFormSubmit: SubmitHandler<HomeFormValues> = async (data, e) => {
 		try {
 			await apiRoutes.addWaterIntake(data.waterIntake);
-			reset();
+			reset({ waterIntake: 0 });
 			await fetchData();
 		} catch (err: any) {
 			setServerError(err.response?.data?.msg || 'An unknown error occurred.');
@@ -120,7 +111,7 @@ const Home: React.FC = () => {
 
 	useEffect(() => {
 		fetchData();
-	}, []);
+	}, [fetchData]);
 
 	return (
 		<Container>
@@ -134,27 +125,47 @@ const Home: React.FC = () => {
 			</TabContainer>
 
 			{activeTab === 0 ? (
-				<Form onSubmit={handleSubmit(onFormSubmit)}>
-					<FormLabel>Intake</FormLabel>
-					<FormInput
-						type='number'
-						name='waterIntake'
-						placeholder='Water intake (ml)'
-						errors={errors}
-						control={control}
-					/>
-					<Button type='submit'>Add</Button>
-					{serverError && <FormErrorBox msg={serverError} />}
-				</Form>
+				dailyIntakeReached ? (
+					<Title>
+						Congrats!! Your daily intake was reached. You drank{' '}
+						{todayTotalIntake} ml of water today and your target was{' '}
+						{targetWaterIntake} ml. Keep up the good work!
+					</Title>
+				) : (
+					<Form onSubmit={handleSubmit(onFormSubmit)}>
+						<FormLabel>Intake</FormLabel>
+						<FormInput
+							type='number'
+							name='waterIntake'
+							placeholder='Water intake (ml)'
+							errors={errors}
+							control={control}
+						/>
+						<Button type='submit'>Add</Button>
+						{serverError && <FormErrorBox msg={serverError} />}
+					</Form>
+				)
 			) : (
-				<ConsumptionList>
-					{todayIntakes &&
-						todayIntakes.map((intake, index) => (
-							<ConsumptionItem key={index}>
-								Intake {index + 1}: {intake.amount} ml
-							</ConsumptionItem>
-						))}
-				</ConsumptionList>
+				<>
+					<ConsumptionList>
+						{todayIntakes &&
+							todayIntakes.map((intake, index) => (
+								<ConsumptionItem key={index}>
+									Intake {index + 1}: {intake.amount} ml
+								</ConsumptionItem>
+							))}
+					</ConsumptionList>
+					{todayIntakes && (
+						<Title>
+							Total:{' '}
+							{todayIntakes.reduce(
+								(totalIntakes, currentIntake) =>
+									totalIntakes + currentIntake.amount,
+								0
+							)}
+						</Title>
+					)}
+				</>
 			)}
 		</Container>
 	);

@@ -5,7 +5,7 @@ import * as yup from 'yup';
 import { Link } from 'react-router-dom';
 
 import Button from 'components/buttons/Button';
-import Input from 'components/inputs/FormInput';
+import Input from 'components/forms/FormInput';
 
 import FormContainer from '../../components/forms/FormContainer';
 import FormLabel from '../../components/forms/FormLabel';

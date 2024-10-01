@@ -38,7 +38,7 @@ const isAxiosError = (error: IErrorProps) => {
 const ErrorPage = () => {
 	const navigate = useNavigate();
 	const error = useRouteError() as IErrorProps;
-	console.log(error);
+
 	useEffect(() => {
 		if (isAxiosError(error) && error.response.status === 401) {
 			navigate(clientRoutePaths.LOGIN);

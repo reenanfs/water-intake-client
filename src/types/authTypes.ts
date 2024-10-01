@@ -5,5 +5,5 @@ export interface IUser {
 	email: string;
 	weight: number;
 	activity_level: ActivityLevel;
-	target_water_amount: string;
+	target_water_amount: number;
 }
