@@ -45,13 +45,13 @@ const lightTheme: DefaultTheme = {
 const darkTheme: DefaultTheme = {
 	colors: {
 		primary: '#231F20',
-		secondary: '#EFE6DD',
+		secondary: '#D2C4B5',
 		tertiary: '#231F20',
 		success: '#28A745',
 		danger: '#DC3545',
 		warning: '#FFC107',
 		info: '#17A2B8',
-		light: '#EFE6DD',
+		light: '#D2C4B5',
 		dark: '#231F20',
 	},
 	fonts: {

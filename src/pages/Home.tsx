@@ -18,36 +18,12 @@ import { TabContainer } from 'components/tabs/TabContainer';
 import { Tab } from 'components/tabs/Tab';
 import { useAuth } from 'hooks/useAuth';
 import Title from 'components/titles/Title';
+import ConsumptionList from 'components/lists/List';
+import ConsumptionItem from 'components/lists/ListItem';
 
 const FormLabel = styled(Label)`
 	font-size: 2rem;
 ` as typeof Label;
-
-const ConsumptionList = styled.ul`
-	list-style-type: none;
-	padding: 0;
-	margin: 20px 0;
-	border-top: 1px solid ${props => props.theme.colors.primary};
-`;
-
-const ConsumptionItem = styled.li`
-	padding: 15px 0;
-	font-size: 1.4rem;
-	color: ${props => props.theme.colors.secondary};
-	border-bottom: 1px solid ${props => props.theme.colors.primary};
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	transition: background-color 0.3s ease;
-	overflow-x: auto;
-	&:hover {
-		background-color: ${props => props.theme.colors.primary};
-	}
-
-	&:last-child {
-		border-bottom: none;
-	}
-`;
 
 interface HomeFormValues {
 	waterIntake: number;
@@ -101,8 +77,8 @@ const Home: React.FC = () => {
 
 	const onFormSubmit: SubmitHandler<HomeFormValues> = async (data, e) => {
 		try {
-			await apiRoutes.addWaterIntake(data.waterIntake);
 			reset({ waterIntake: 0 });
+			await apiRoutes.addWaterIntake(data.waterIntake!);
 			await fetchData();
 		} catch (err: any) {
 			setServerError(err.response?.data?.msg || 'An unknown error occurred.');
@@ -126,11 +102,14 @@ const Home: React.FC = () => {
 
 			{activeTab === 0 ? (
 				dailyIntakeReached ? (
-					<Title>
-						Congrats!! Your daily intake was reached. You drank{' '}
-						{todayTotalIntake} ml of water today and your target was{' '}
-						{targetWaterIntake} ml. Keep up the good work!
-					</Title>
+					<>
+						<Title>Congrats! Your daily intake was reached!!</Title>
+						<Title>
+							You drank {todayTotalIntake} ml of water today and your target was{' '}
+							{targetWaterIntake} ml
+						</Title>
+						<Title>Keep up the good work!</Title>
+					</>
 				) : (
 					<Form onSubmit={handleSubmit(onFormSubmit)}>
 						<FormLabel>Intake</FormLabel>
@@ -147,14 +126,6 @@ const Home: React.FC = () => {
 				)
 			) : (
 				<>
-					<ConsumptionList>
-						{todayIntakes &&
-							todayIntakes.map((intake, index) => (
-								<ConsumptionItem key={index}>
-									Intake {index + 1}: {intake.amount} ml
-								</ConsumptionItem>
-							))}
-					</ConsumptionList>
 					{todayIntakes && (
 						<Title>
 							Total:{' '}
@@ -165,6 +136,14 @@ const Home: React.FC = () => {
 							)}
 						</Title>
 					)}
+					<ConsumptionList>
+						{todayIntakes &&
+							todayIntakes.map((intake, index) => (
+								<ConsumptionItem key={index}>
+									Intake {index + 1}: {intake.amount} ml
+								</ConsumptionItem>
+							))}
+					</ConsumptionList>
 				</>
 			)}
 		</Container>
